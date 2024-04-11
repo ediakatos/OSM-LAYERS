@@ -1,8 +1,6 @@
 import os
 from multiprocessing import Pool, cpu_count
 import logging
-
-
 from layers.road_sub1_class import OSMRoadDataDownloader
 from layers.railway_sub3_class import OSMRailwayDataDownloader
 from layers.dam_sub5_class import OSMDamDataDownloader
@@ -23,7 +21,9 @@ from layers.phy_river_sub29_class import OSMRiverDataDownloader
 from layers.canal_sub30_class import OSMCanalDataDownloader
 from layers.rail2_sub31_class import OSMRailwayStationDataDownloader
 
-
+# function 'get_crs_project' that takes a country code as input and returns the corresponding
+# coordinate Reference System (CRS) code. CRS codes are used to translate between geographic locations
+# and map coordinates.
 def get_crs_project(country_code):
     crs_mapping = {
         'afg': 4255,  
@@ -35,12 +35,19 @@ def get_crs_project(country_code):
     }
     return crs_mapping.get(country_code.lower(), 4326) 
 
+
+# Define a function 'process_geojson_file' that takes the path of a geojson file as input.
 def process_geojson_file(geojson_path):
+    # Extract the country code from the filename of the geojson file. This assumes the file is named using the country code.
     country_code = os.path.basename(geojson_path).split('.')[0]
+    # Call 'get_crs_project' function with the extracted country code to get the appropriate CRS code for the country.
     crs_project = get_crs_project(country_code)
+    # Define a variable 'crs_global' with a value of 4326, representing the global CRS code (WGS 84).
     crs_global = 4326
 
-    # Initialize downloader instances
+    # Initialisee a list 'downloaders' with instances of various data downloader classes,
+    # each initialised with parameters like the geojson path, country code, and CRS codes.
+    # These instances are responsible for downloading and processing specific types of geographic data.
     downloaders = [
         OSMRoadDataDownloader(geojson_path, country_code),
         OSMRailwayDataDownloader(geojson_path, country_code),
@@ -63,21 +70,28 @@ def process_geojson_file(geojson_path):
         OSMRailwayStationDataDownloader(geojson_path, crs_project, crs_global, country_code),
 
     ]
-
+    # Iterate over each downloader instance in the 'downloaders' list.
     for downloader in downloaders:
         try:
+            # Attempt to download and process the data using the 'download_and_process_data' method of the downloader instance.
             downloader.download_and_process_data()
+            # If the download and processing are successful, log a completion message with the class name of the downloader.
             logging.info(f"Completed: {downloader.__class__.__name__}")
         except Exception as e:
+            # If an error occurs during the download or processing, log an error message with the class name of the downloader and the error message.
             logging.error(f"Error in {downloader.__class__.__name__}: {e}")
-
+# The 'main' function, which serves as the entry point for the script execution.
 def main():
+    # Configure the logging system to display the current time, logging level, and the message in the logs.
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
+    # Create a list 'geojson_files' by listing all files in 'geojson_dir' that end with '.json' extension,
+    # and joining their full path with the directory path.
     geojson_dir = "/home/evangelos/Targets/Targets_OSM"
     geojson_files = [os.path.join(geojson_dir, f) for f in os.listdir(geojson_dir) if f.endswith(".json")]
 
-    # Use a multiprocessing Pool to process each geojson file in parallel
+    # Use a multiprocessing Pool to process each geojson file in parallel:
+    # Use a 'with' statement to manage the context of the multiprocessing 'Pool'.
+    # The 'processes' parameter is set to the number of CPU cores to optimize parallel processing.
     with Pool(processes=cpu_count()) as pool:
         pool.map(process_geojson_file, geojson_files)
 

@@ -1,0 +1,1 @@
+{"version": 0.6, "generator": "Overpass API 0.7.61.5 4133829e", "osm3s": {"timestamp_osm_base": "2024-03-06T11:00:15Z", "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."}, "elements": [{"type": "node", "id": 11175363939, "lat": 36.3832282, "lon": 42.4699206, "tags": {"amenity": "bank", "name": "\u063a"}}]}

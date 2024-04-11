@@ -16,7 +16,6 @@ class OSMRoadDataDownloader:
         self.output_filename = f"{country_code}_tran_rds_ln_s0_osm_pp_roads.shp"
 
     def download_and_process_data(self):
-        # Ensure output directory exists
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
 
         gdf = gpd.read_file(self.geojson_path)
@@ -28,30 +27,28 @@ class OSMRoadDataDownloader:
         graph = ox.graph_from_polygon(polygon, network_type='drive')
         _, gdf_edges = ox.graph_to_gdfs(graph)
         
-        # Initialize an empty GeoDataFrame to store the concatenated results
+    
         all_roads_gdf = gpd.GeoDataFrame()
 
         for road_type in self.osm_road_values.split(','):
-            # Filter the edges to the current road type
             gdf_filtered = gdf_edges[gdf_edges['highway'].apply(lambda x: road_type in x if isinstance(x, list) else road_type == x)]
 
-            # Ensure all required tags are present, even if they are missing in the data
             for tag in self.osm_required_tags:
                 if tag not in gdf_filtered.columns:
                     gdf_filtered[tag] = pd.NA
 
-            # Clean up the list fields and create 'fclass'
+     
             gdf_filtered['fclass'] = road_type
             list_type_cols = gdf_filtered.columns[gdf_filtered.dtypes == 'object']
             for col in list_type_cols:
                 gdf_filtered[col] = gdf_filtered[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
             
-            # Append the filtered DataFrame to the all_roads_gdf GeoDataFrame
+           
             all_roads_gdf = pd.concat([all_roads_gdf, gdf_filtered], ignore_index=True)
 
         all_roads_gdf = self.ensure_unique_column_names(all_roads_gdf)
 
-        # Keep only the columns required for the final shapefile
+       
         columns_to_keep = ['geometry','osmid' ,'fclass'] + self.osm_required_tags
         all_roads_gdf = all_roads_gdf[columns_to_keep]
 
@@ -67,7 +64,7 @@ class OSMRoadDataDownloader:
         final_columns = {}
         unique_suffixes = {}
 
-        # Truncate column names to 10 characters
+        
         for col in gdf.columns:
             truncated = col[:10]
             if truncated not in truncated_columns:
@@ -75,8 +72,6 @@ class OSMRoadDataDownloader:
             else:
                 truncated_columns[truncated] += 1
             final_columns[col] = truncated
-
-        # Resolve duplicates by adding a unique suffix
         for original, truncated in final_columns.items():
             if truncated_columns[truncated] > 1:
                 if truncated not in unique_suffixes:

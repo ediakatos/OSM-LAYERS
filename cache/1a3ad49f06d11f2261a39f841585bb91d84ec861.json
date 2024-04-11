@@ -1,0 +1,1 @@
+{"version": 0.6, "generator": "Overpass API 0.7.61.5 4133829e", "osm3s": {"timestamp_osm_base": "2024-03-06T11:03:20Z", "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."}, "elements": [{"type": "node", "id": 6432239586, "lat": 36.5683825, "lon": 41.6937161, "tags": {"amenity": "atm", "opening_hours": "24/7"}}]}
