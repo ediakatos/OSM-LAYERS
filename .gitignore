@@ -1,5 +1,9 @@
 # Ignore Python virtual environments
 venv/
+
+# Ignore cache directories everywhere
+*/cache/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
