@@ -1,1 +1,0 @@
-{"version": 0.6, "generator": "Overpass API 0.7.61.5 4133829e", "osm3s": {"timestamp_osm_base": "2024-02-29T13:56:30Z", "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."}, "elements": [{"type": "node", "id": 1079496520, "lat": 57.8573296, "lon": 19.0588314, "tags": {"amenity": "school"}}]}

@@ -1,1 +1,0 @@
-{"version": 0.6, "generator": "Overpass API 0.7.61.5 4133829e", "osm3s": {"timestamp_osm_base": "2024-03-06T11:44:15Z", "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."}, "elements": [{"type": "node", "id": 10752309534, "lat": 4.378328, "lon": 37.2612423, "tags": {"name": "El Hobok", "place": "village"}}]}

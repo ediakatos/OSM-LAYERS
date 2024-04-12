@@ -1,1 +1,0 @@
-{"version": 0.6, "generator": "Overpass API 0.7.61.5 4133829e", "osm3s": {"timestamp_osm_base": "2024-03-05T13:36:45Z", "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."}, "elements": [{"type": "node", "id": 8817821795, "lat": 31.4477896, "lon": 65.2682455, "tags": {"place": "hamlet"}}]}

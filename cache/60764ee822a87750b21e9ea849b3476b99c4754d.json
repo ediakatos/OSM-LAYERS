@@ -1,1 +1,0 @@
-{"version": 0.6, "generator": "Overpass API 0.7.61.5 4133829e", "osm3s": {"timestamp_osm_base": "2024-03-06T11:45:15Z", "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."}, "elements": [{"type": "node", "id": 3328712765, "lat": 3.0644081, "lon": 36.8263484, "tags": {"name": "Gas", "place": "village"}}]}
