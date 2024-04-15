@@ -1,5 +1,5 @@
 import os
-from multiprocessing import Pool, cpu_count
+import time 
 import logging
 from layers.road_sub1_class import OSMRoadDataDownloader
 from layers.railway_sub3_class import OSMRailwayDataDownloader
@@ -72,11 +72,14 @@ def process_geojson_file(geojson_path):
     ]
     # Iterate over each downloader instance in the 'downloaders' list.
     for downloader in downloaders:
+        start_time = time.time()
         try:
             # Attempt to download and process the data using the 'download_and_process_data' method of the downloader instance.
             downloader.download_and_process_data()
+            end_time = time.time()
+            duration = end_time - start_time
             # If the download and processing are successful, log a completion message with the class name of the downloader.
-            logging.info(f"Completed: {downloader.__class__.__name__}")
+            logging.info(f"Completed: {downloader.__class__.__name__} in {duration:.2f} seconds")
         except Exception as e:
             # If an error occurs during the download or processing, log an error message with the class name of the downloader and the error message.
             logging.error(f"Error in {downloader.__class__.__name__}: {e}")
