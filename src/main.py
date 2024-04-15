@@ -89,11 +89,15 @@ def main():
     geojson_dir = "/home/evangelos/Targets/Targets_OSM"
     geojson_files = [os.path.join(geojson_dir, f) for f in os.listdir(geojson_dir) if f.endswith(".json")]
 
-    # Use a multiprocessing Pool to process each geojson file in parallel:
-    # Use a 'with' statement to manage the context of the multiprocessing 'Pool'.
-    # The 'processes' parameter is set to the number of CPU cores to optimize parallel processing.
-    with Pool(processes=cpu_count()) as pool:
-        pool.map(process_geojson_file, geojson_files)
+    # Instead of using multiprocessing, we use a simple for loop to process each file sequentially.
+    for geojson_file in geojson_files:
+        try:
+            # Process each file using the process_geojson_file function.
+            process_geojson_file(geojson_file)
+            logging.info(f"Successfully processed {geojson_file}")
+        except Exception as e:
+            logging.error(f"Failed to process {geojson_file}: {e}")
+
 
 if __name__ == "__main__":
     main()
