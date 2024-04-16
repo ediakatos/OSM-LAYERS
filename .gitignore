@@ -1,6 +1,9 @@
 # Ignore Python virtual environments
 venv/
 
+# Ignore logs
+logs/
+
 # Ignore cache directories everywhere
 */cache/
 cache/
