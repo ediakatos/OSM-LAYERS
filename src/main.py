@@ -1,6 +1,9 @@
 import os
-from multiprocessing import Pool, cpu_count
+import time 
 import logging
+import cProfile
+import pstats
+import io
 from layers.road_sub1_class import OSMRoadDataDownloader
 from layers.railway_sub3_class import OSMRailwayDataDownloader
 from layers.dam_sub5_class import OSMDamDataDownloader
@@ -72,14 +75,28 @@ def process_geojson_file(geojson_path):
     ]
     # Iterate over each downloader instance in the 'downloaders' list.
     for downloader in downloaders:
+        pr = cProfile.Profile()
+        pr.enable() # enable profiling
         try:
+            start_time = time.time()
             # Attempt to download and process the data using the 'download_and_process_data' method of the downloader instance.
             downloader.download_and_process_data()
+            end_time = time.time()
+            duration = end_time - start_time
+
+            pr.disable() # stop profiling
+            s = io.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
             # If the download and processing are successful, log a completion message with the class name of the downloader.
-            logging.info(f"Completed: {downloader.__class__.__name__}")
+            logging.info(f"Completed: {downloader.__class__.__name__}:\n{s.getvalue()} in {duration:.2f} seconds")
         except Exception as e:
             # If an error occurs during the download or processing, log an error message with the class name of the downloader and the error message.
             logging.error(f"Error in {downloader.__class__.__name__}: {e}")
+        
+        finally:
+            pr.disable()
 # The 'main' function, which serves as the entry point for the script execution.
 def main():
     # Configure the logging system to display the current time, logging level, and the message in the logs.
@@ -89,11 +106,15 @@ def main():
     geojson_dir = "/home/evangelos/Targets/Targets_OSM"
     geojson_files = [os.path.join(geojson_dir, f) for f in os.listdir(geojson_dir) if f.endswith(".json")]
 
-    # Use a multiprocessing Pool to process each geojson file in parallel:
-    # Use a 'with' statement to manage the context of the multiprocessing 'Pool'.
-    # The 'processes' parameter is set to the number of CPU cores to optimize parallel processing.
-    with Pool(processes=cpu_count()) as pool:
-        pool.map(process_geojson_file, geojson_files)
+    # Instead of using multiprocessing, we use a simple for loop to process each file sequentially.
+    for geojson_file in geojson_files:
+        try:
+            # Process each file using the process_geojson_file function.
+            process_geojson_file(geojson_file)
+            logging.info(f"Successfully processed {geojson_file}")
+        except Exception as e:
+            logging.error(f"Failed to process {geojson_file}: {e}")
+
 
 if __name__ == "__main__":
     main()
