@@ -74,28 +74,28 @@ def process_geojson_file(geojson_path):
     # These instances are responsible for downloading and processing specific types of geographic data.
     downloaders = [
         OSMRoadDataDownloader(geojson_path, country_code),
-        OSMRailwayDataDownloader(geojson_path, country_code),
-        OSMDamDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMSchoolDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMEducationDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMFerryRouteDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMATMDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMHealthDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMBorderControlDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMSettlementsDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMLakeDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMLargeRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMCanalDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMRailwayStationDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMRailwayDataDownloader(geojson_path, country_code),
+        # OSMDamDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMSchoolDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMEducationDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMFerryRouteDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMATMDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMHealthDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMBorderControlDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMSettlementsDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMLakeDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMLargeRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMCanalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMRailwayStationDataDownloader(geojson_path, crs_project, crs_global, country_code),
 
     ]
 
-    num_processes = cpu_count() * 2
+    num_processes = cpu_count() * 3
 
     with Pool(processes=num_processes) as pool:
         results = pool.map(process_downloader, downloaders)
@@ -105,8 +105,12 @@ def process_geojson_file(geojson_path):
 
 # The 'main' function, which serves as the entry point for the script execution.
 def main():
-    # Configure the logging system to display the current time, logging level, and the message in the logs.
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    # # Configure the logging system to display the current time, logging level, and the message in the logs.
+    # logging.basicConfig(level=logging.INFO, 
+    #                     format='%(asctime)s - %(levelname)s - %(message)s',handlers=[
+    #                         logging.FileHandler(log_file, mode='a'),  # Ensure append mode
+    #                         logging.StreamHandler()
+    #                     ])
     # Create a list 'geojson_files' by listing all files in 'geojson_dir' that end with '.json' extension,
     # and joining their full path with the directory path.
     geojson_dir = "/home/evangelos/Targets/Targets_OSM"
@@ -122,7 +126,7 @@ def main():
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         handlers=[
-                            logging.FileHandler(log_file),
+                            logging.FileHandler(log_file, mode='a'),
                             logging.StreamHandler()
                         ])
 
