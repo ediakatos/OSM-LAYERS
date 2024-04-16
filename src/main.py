@@ -4,6 +4,7 @@ import logging
 import cProfile
 import pstats
 import io
+from multiprocessing import Pool, cpu_count
 from layers.road_sub1_class import OSMRoadDataDownloader
 from layers.railway_sub3_class import OSMRailwayDataDownloader
 from layers.dam_sub5_class import OSMDamDataDownloader
@@ -36,7 +37,27 @@ def get_crs_project(country_code):
         'ken': 4210,
         # Add more mappings as necessary
     }
-    return crs_mapping.get(country_code.lower(), 4326) 
+    return crs_mapping.get(country_code.lower(), 4326)
+
+def process_downloader(downloader):
+    pr = cProfile.Profile()
+    pr.enable()  # Start profiling
+    try:
+        start_time = time.time()
+        downloader.download_and_process_data()
+        end_time = time.time()
+        duration = end_time - start_time
+
+        pr.disable()  # Stop profiling
+        s = io.StringIO()
+        ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+        ps.print_stats()
+        result = f"Completed: {downloader.__class__.__name__} in {duration:.2f} seconds\n{s.getvalue()}"
+    except Exception as e:
+        result = f"Error in {downloader.__class__.__name__}: {e}"
+    finally:
+        pr.disable()
+    return result
 
 
 # Define a function 'process_geojson_file' that takes the path of a geojson file as input.
@@ -53,58 +74,61 @@ def process_geojson_file(geojson_path):
     # These instances are responsible for downloading and processing specific types of geographic data.
     downloaders = [
         OSMRoadDataDownloader(geojson_path, country_code),
-        OSMRailwayDataDownloader(geojson_path, country_code),
-        OSMDamDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMSchoolDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMEducationDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMFerryRouteDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMATMDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMHealthDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMBorderControlDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMSettlementsDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMLakeDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMLargeRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMCanalDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMRailwayStationDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMRailwayDataDownloader(geojson_path, country_code),
+        # OSMDamDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMSchoolDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMEducationDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMFerryRouteDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMATMDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMHealthDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMBorderControlDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMSettlementsDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMLakeDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMLargeRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMCanalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        # OSMRailwayStationDataDownloader(geojson_path, crs_project, crs_global, country_code),
 
     ]
-    # Iterate over each downloader instance in the 'downloaders' list.
-    for downloader in downloaders:
-        pr = cProfile.Profile()
-        pr.enable() # enable profiling
-        try:
-            start_time = time.time()
-            # Attempt to download and process the data using the 'download_and_process_data' method of the downloader instance.
-            downloader.download_and_process_data()
-            end_time = time.time()
-            duration = end_time - start_time
 
-            pr.disable() # stop profiling
-            s = io.StringIO()
-            sortby = 'cumulative'
-            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-            ps.print_stats()
-            # If the download and processing are successful, log a completion message with the class name of the downloader.
-            logging.info(f"Completed: {downloader.__class__.__name__}:\n{s.getvalue()} in {duration:.2f} seconds")
-        except Exception as e:
-            # If an error occurs during the download or processing, log an error message with the class name of the downloader and the error message.
-            logging.error(f"Error in {downloader.__class__.__name__}: {e}")
-        
-        finally:
-            pr.disable()
+    num_processes = cpu_count() * 3
+
+    with Pool(processes=num_processes) as pool:
+        results = pool.map(process_downloader, downloaders)
+        for result in results:
+            logging.info(result)
+  
+
 # The 'main' function, which serves as the entry point for the script execution.
 def main():
-    # Configure the logging system to display the current time, logging level, and the message in the logs.
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    # # Configure the logging system to display the current time, logging level, and the message in the logs.
+    # logging.basicConfig(level=logging.INFO, 
+    #                     format='%(asctime)s - %(levelname)s - %(message)s',handlers=[
+    #                         logging.FileHandler(log_file, mode='a'),  # Ensure append mode
+    #                         logging.StreamHandler()
+    #                     ])
     # Create a list 'geojson_files' by listing all files in 'geojson_dir' that end with '.json' extension,
     # and joining their full path with the directory path.
     geojson_dir = "/home/evangelos/Targets/Targets_OSM"
     geojson_files = [os.path.join(geojson_dir, f) for f in os.listdir(geojson_dir) if f.endswith(".json")]
+
+    # log txt logic
+    repo_dir = "/home/evangelos/data-pipeline/OSM-LAYERS"
+    log_file = os.path.join(repo_dir, "logs", "processing_log.txt")
+    # Ensures log directory exists
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+    # Configures logging to write to a file and print to console
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[
+                            logging.FileHandler(log_file, mode='a'),
+                            logging.StreamHandler()
+                        ])
 
     # Instead of using multiprocessing, we use a simple for loop to process each file sequentially.
     for geojson_file in geojson_files:
