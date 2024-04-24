@@ -95,13 +95,24 @@ def process_geojson_file(geojson_path):
 
     ]
 
-    num_processes = cpu_count() * 3
+    # num_processes = cpu_count() * 2
 
-    with Pool(processes=num_processes) as pool:
-        results = pool.map(process_downloader, downloaders)
-        for result in results:
-            logging.info(result)
-  
+    # with Pool(processes=num_processes) as pool:
+    #     results = pool.map(process_downloader, downloaders)
+    #     for result in results:
+    #         logging.info(result)
+
+     # Iterate over each downloader instance in the 'downloaders' list.
+    for downloader in downloaders:
+        try:
+            # Attempt to download and process the data using the 'download_and_process_data' method of the downloader instance.
+            downloader.download_and_process_data()
+            # If the download and processing are successful, log a completion message with the class name of the downloader.
+            logging.info(f"Completed: {downloader.__class__.__name__}")
+        except Exception as e:
+            # If an error occurs during the download or processing, log an error message with the class name of the downloader and the error message.
+            logging.error(f"Error in {downloader.__class__.__name__}: {e}")
+
 
 # The 'main' function, which serves as the entry point for the script execution.
 def main():
@@ -130,15 +141,21 @@ def main():
                             logging.StreamHandler()
                         ])
 
-    # Instead of using multiprocessing, we use a simple for loop to process each file sequentially.
-    for geojson_file in geojson_files:
-        try:
-            # Process each file using the process_geojson_file function.
-            process_geojson_file(geojson_file)
-            logging.info(f"Successfully processed {geojson_file}")
-        except Exception as e:
-            logging.error(f"Failed to process {geojson_file}: {e}")
+    # # Instead of using multiprocessing, we use a simple for loop to process each file sequentially.
+    # for geojson_file in geojson_files:
+    #     try:
+    #         # Process each file using the process_geojson_file function.
+    #         process_geojson_file(geojson_file)
+    #         logging.info(f"Successfully processed {geojson_file}")
+    #     except Exception as e:
+    #         logging.error(f"Failed to process {geojson_file}: {e}")
 
+    # Process each GeoJSON file in parallel
+    num2_processes = cpu_count() * 2
+
+    with Pool(processes=num2_processes) as pool:
+        pool.map(process_geojson_file, geojson_files)
+   
 
 if __name__ == "__main__":
     main()
