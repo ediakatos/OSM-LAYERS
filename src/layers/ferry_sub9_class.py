@@ -1,12 +1,10 @@
-# osm_ferry_route_data_downloader.py
 import os
 import osmnx as ox
 import geopandas as gpd
 import pandas as pd
 
 class OSMFerryRouteDataDownloader:
-    # Class attribute for the output filename based on the MapAction file name requirement
-   # output_filename = "/home/evangelos/osm-data/ferry_route/swe_tran_fer_ln_s2_osm_pp_ferryroute.gpkg"
+
 
 
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
@@ -16,11 +14,12 @@ class OSMFerryRouteDataDownloader:
         # OSM tags to search for ferry routes
         self.osm_tags = {'route': 'ferry'}  
         ox.config(log_console=True, use_cache=True)
+        self.attributes = ['name', 'name:en', 'name_en']
         
         self.output_filename = f"/home/evangelos/osm-data/ferry_route/{country_code}_tran_fer_ln_s2_osm_pp_ferryroute.gpkg"
-
+    
     def download_and_process_data(self):
-        # Load the AOI from the GeoJSON file
+        # Load the Area of Interest (AOI) from the GeoJSON file
         region_gdf = gpd.read_file(self.geojson_path)
         geometry = region_gdf['geometry'].iloc[0]
 
@@ -36,13 +35,22 @@ class OSMFerryRouteDataDownloader:
             if key not in gdf.columns:
                 gdf[key] = pd.NA
 
-        # # Handle list-type fields before saving
-        # for col in gdf.columns:
-        #     if isinstance(gdf[col].iloc[0], list):
-        #         gdf[col] = gdf[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
         list_type_cols = [col for col, dtype in gdf.dtypes.items() if dtype == object]
         for col in list_type_cols:
             gdf[col] = gdf[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
+
+        # Identify actual and missing tags
+        actual_tags = gdf.columns.intersection(self.attributes)
+        missing_tags = set(self.attributes) - set(actual_tags)
+        if missing_tags:
+            print(f"Warning: The following tags are missing from the data and will not be included: {missing_tags}")
+
+        # Define columns to keep, excluding unwanted fields
+        unwanted_fields = {'manmade', 'image', 'ref', 'source', 'layer', 'surface'}
+        columns_to_keep = set(['geometry'] + list(actual_tags)) - unwanted_fields
+        columns_to_keep = list(columns_to_keep)  # Convert back to list if necessary for further operations
+        gdf = gdf[columns_to_keep]
+
 
         # Make directories if they don't exist
         os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)

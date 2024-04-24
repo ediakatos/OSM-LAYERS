@@ -4,8 +4,7 @@ import geopandas as gpd
 import pandas as pd
 
 class OSMBorderControlDataDownloader:
-    # Class attribute for the output filename with the specified naming convention
-    #output_filename = "/home/evangelos/data/data_sub18/swe_sub18/swe_pois_bor_pt_s3_osm_pp_bordercrossing.shp"
+
     
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
@@ -16,33 +15,33 @@ class OSMBorderControlDataDownloader:
         self.output_filename = f"/home/evangelos/osm-data/border_control/{country_code}_pois_bor_pt_s3_osm_pp_bordercrossing.shp"
 
     def download_and_process_data(self):
-        # Load the region of interest geometry
+      
         region_gdf = gpd.read_file(self.geojson_path)
         geometry = region_gdf['geometry'].iloc[0]
 
-        # Ensure the geometry is appropriate
+      
         if geometry.geom_type not in ['Polygon', 'MultiPolygon']:
             raise ValueError("Geometry type not supported. Please provide a Polygon or MultiPolygon.")
 
-        # Download border control data
+
         gdf_border_control = ox.geometries_from_polygon(geometry, tags={'border': 'border_control'})
 
-        # Process geometries to centroid points
+     
         gdf_border_control = self.process_geometries(gdf_border_control)
 
-        # Ensure unique column names and presence of required fields
+
         gdf_border_control = self.ensure_unique_column_names(gdf_border_control)
 
-        # Save the processed data
+ 
         self.save_data(gdf_border_control)
 
     def process_geometries(self, gdf):
-        # Create centroids for polygon geometries and reproject
+        
         gdf = gdf.to_crs(epsg=self.crs_project)
         gdf['geometry'] = gdf.apply(lambda row: row['geometry'].centroid if row['geometry'].geom_type != 'Point' else row['geometry'], axis=1)
         gdf = gdf.to_crs(epsg=self.crs_global)
 
-        # Handle list-type fields
+    
         for col in gdf.columns:
             if pd.api.types.is_object_dtype(gdf[col]) and gdf[col].apply(lambda x: isinstance(x, list)).any():
                 gdf[col] = gdf[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
@@ -50,7 +49,7 @@ class OSMBorderControlDataDownloader:
         return gdf
 
     def ensure_unique_column_names(self, gdf):
-        # Ensure that column names are unique after truncation
+       
         new_columns = {}
         for col in gdf.columns:
             new_col = col[:10]
@@ -63,10 +62,10 @@ class OSMBorderControlDataDownloader:
         return gdf
 
     def save_data(self, gdf):
-        # Make directories if they don't exist
+   
         os.makedirs(os.path.dirname(OSMBorderControlDataDownloader.output_filename), exist_ok=True)
 
-        # Attempt to save the GeoDataFrame
+    
         try:
             gdf.to_file(OSMBorderControlDataDownloader.output_filename, driver='ESRI Shapefile')
         except Exception as e:

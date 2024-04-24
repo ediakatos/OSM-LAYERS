@@ -1,7 +1,6 @@
 import os
 import osmnx as ox
 import geopandas as gpd
-import pandas as pd
 
 class OSMPortDataDownloader:
     # Class attribute for the output filename
@@ -11,7 +10,7 @@ class OSMPortDataDownloader:
         self.geojson_path = geojson_path
         self.crs_project = crs_project
         self.crs_global = crs_global
-        self.osm_tags = {'landuse': ['harbour', 'industrial'], 'harbour': 'port'}
+        self.osm_tags = {'landuse': ['harbour', 'industrial', 'port'], 'harbour': 'port'}
         ox.settings.log_console = True
         ox.settings.use_cache = True
         self.attributes = ['name', 'name:en', 'name_en']
@@ -41,13 +40,15 @@ class OSMPortDataDownloader:
 
         # Make directories if they don't exist
         os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)
-        
+
+
+        gdf['fclass'] = gdf['landuse']
         actual_tags = gdf.columns.intersection(self.attributes)
         missing_tags = set(self.attributes) - set(actual_tags)
         if missing_tags:
             print(f"Warning: The following tags are missing from the data and will not be included: {missing_tags}")
         
-        collumns_to_keep = ['geometry'] + list(actual_tags) #+ list(self.osm_tags)
+        collumns_to_keep = ['geometry', 'fclass'] + list(actual_tags) #+ list(self.osm_tags)
         gdf = gdf[collumns_to_keep]
 
         self.ensure_unique_column_names(gdf)

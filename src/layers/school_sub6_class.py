@@ -19,51 +19,6 @@ class OSMSchoolDataDownloader:
         ox.config(log_console=True, use_cache=True)
         self.output_filename = f"/home/evangelos/osm-data/education/{country_code}_educ_edu_pt_s3_osm_pp_schools.gpkg"
 
-
-    # def download_and_process_data(self):
-    #     region_gdf = gpd.read_file(self.geojson_path)
-    #     geometry = region_gdf['geometry'].iloc[0]
-
-    #     if geometry.geom_type not in ['Polygon', 'MultiPolygon']:
-    #         raise ValueError("Geometry type not supported. Please provide a Polygon or MultiPolygon.")
-
-    #     gdf = ox.geometries_from_polygon(geometry, tags={self.osm_key: self.osm_value})
-        
-    #     gdf_projected = gdf.to_crs(epsg=self.crs_project)
-    #     gdf_projected['geometry'] = gdf_projected.geometry.centroid
-    #     gdf = gdf_projected.to_crs(epsg=self.crs_global)
-
-    #     if 'fclass' not in gdf.columns:
-    #         gdf['fclass'] = self.osm_value
-
-    #     for tag in self.additional_tags:
-    #         if tag not in gdf.columns:
-    #             gdf[tag] = pd.NA
-
-    #     list_type_cols = [col for col, dtype in gdf.dtypes.items() if dtype == object]
-    #     for col in list_type_cols:
-    #         gdf[col] = gdf[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
-
-    #     os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)
-
-    #     # Ensure unique column names for Shapefile format
-    #     gdf = self.ensure_unique_column_names(gdf)
-
-    #     # Identify the tags actually present in the data
-    #     actual_tags = gdf.columns.intersection(self.additional_tags)
-    #     missing_tags = set(self.additional_tags) - set(actual_tags)
-    #     if missing_tags:
-    #         print(f"Warning: The following tags are missing from the data and will not be included: {missing_tags}")
-
-    #     # Keep only the geometry, fclass, and the actual present tags
-    #     columns_to_keep = ['geometry', 'fclass'] + list(actual_tags)
-    #     gdf = gdf[columns_to_keep]
-
-    #     if not gdf.empty:
-    #         gdf.to_file(self.output_filename, driver='GPKG')
-    #     else:
-    #         print("No data to save.")
-
     def download_and_process_data(self):
         region_gdf = gpd.read_file(self.geojson_path)
         geometry = region_gdf['geometry'].iloc[0]

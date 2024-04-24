@@ -4,8 +4,7 @@ import geopandas as gpd
 import pandas as pd
 
 class OSMCanalDataDownloader:
-    # Class attribute for the output filename with the specified naming convention
-    #output_filename = "/home/evangelos/data/data_subXX/swe_subXX/ISO_phys_can_ln_s3_osm_pp_canal.shp"
+
     
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
@@ -74,13 +73,6 @@ class OSMCanalDataDownloader:
             unique_columns[col] = col_truncated
         gdf.rename(columns=unique_columns, inplace=True)
         return gdf
-
-    # def save_data(self, gdf):
-    #     os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)
-    #     try:
-    #         gdf.to_file(self.output_filename, driver='ESRI Shapefile')
-    #     except Exception as e:
-    #         print(f"An error occurred while saving the GeoDataFrame: {e}")
 
     def save_data(self, gdf):
         os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)

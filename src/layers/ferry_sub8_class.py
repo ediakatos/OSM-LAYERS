@@ -4,8 +4,7 @@ import geopandas as gpd
 import pandas as pd
 
 class OSMFerryTerminalDataDownloader:
-    # Class attribute for the output filename
-    #output_filename = "/home/evangelos/data/data_sub8/swe_sub8/swe_tran_fte_pt_s2_osm_pp_ferryterminal.shp"
+
 
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
