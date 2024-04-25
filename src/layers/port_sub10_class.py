@@ -15,7 +15,9 @@ class OSMPortDataDownloader:
         ox.settings.use_cache = True
         self.attributes = ['name', 'name:en', 'name_en']
         # Class attribute for the output filename
-        self.output_filename = f"/home/evangelos/osm-data/port/{country_code}_tran_por_pt_s0_osm_pp_port.shp"
+        #self.output_filename = f"/home/evangelos/osm-data/port/{country_code}_tran_por_pt_s0_osm_pp_port.shp"
+        self.output_filename = f"/home/gis/dedicated_disk/geocint/data/out/country_extractions/{country_code}/232_tran/{country_code}_tran_por_pt_s0_osm_pp_port.shp"
+        
 
     def download_and_process_data(self):
         region_gdf = gpd.read_file(self.geojson_path)

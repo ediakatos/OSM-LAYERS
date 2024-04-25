@@ -12,8 +12,11 @@ class OSMRoadDataDownloader:
         self.country_code = country_code
         ox.settings.log_console = True
         ox.settings.use_cache = True
-        self.output_dir = f"/home/evangelos/osm-data/roads/"
+        #self.output_dir = f"/home/evangelos/osm-data/roads/"
+        #self.output_filename = f"{country_code}_tran_rds_ln_s0_osm_pp_roads.shp"
+        self.output_dir = f"/home/gis/dedicated_disk/geocint/data/out/country_extractions/{country_code}/232_tran/"
         self.output_filename = f"{country_code}_tran_rds_ln_s0_osm_pp_roads.shp"
+    
 
     def download_and_process_data(self):
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)

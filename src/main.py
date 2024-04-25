@@ -124,7 +124,7 @@ def main():
     #                     ])
     # Create a list 'geojson_files' by listing all files in 'geojson_dir' that end with '.json' extension,
     # and joining their full path with the directory path.
-    geojson_dir = "/home/evangelos/Targets/Targets_OSM"
+    geojson_dir = "/home/gis/dedicated_disk/gis/geocint-mapaction/static_data/countries" # "/home/evangelos/Targets/Targets_OSM"
     geojson_files = [os.path.join(geojson_dir, f) for f in os.listdir(geojson_dir) if f.endswith(".json")]
 
     # log txt logic

@@ -15,8 +15,10 @@ class OSMRailwayDataDownloader:
         self.geojson_path = geojson_path
         ox.settings.log_console = True
         ox.settings.use_cache = True
-        self.output_dir = f"/home/evangelos/osm-data/railway/"
-        self.output_filename = f"{country_code}_tran_rrd_ln_s2_osm_pp_railways.shp"
+        #self.output_dir = f"/home/evangelos/osm-data/railway/"
+        #self.output_filename = f"{country_code}_tran_rrd_ln_s2_osm_pp_railways.shp"
+        self.output_dir = f"/home/gis/dedicated_disk/geocint/data/out/country_extractions/{country_code}/232_tran/"
+        self.output_filename = f"{country_code}_tran_rst_pt_s2_osm_pp_railwaystation.shp"
     
     def download_and_process_data(self):
     # Ensure output directory exists
