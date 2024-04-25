@@ -15,7 +15,7 @@ class OSMSettlementsDataDownloader:
         self.attributes = ['name', 'name:en', 'name_en']
         ox.settings.log_console = True
         ox.settings.use_cache = True
-        self.output_filename = f"/home/evangelos/osm-data/settlements/{country_code}_stle_stl_pt_s3_osm_pp_settlements.shp"
+        #self.output_filename = f"/home/evangelos/osm-data/settlements/{country_code}_stle_stl_pt_s3_osm_pp_settlements.shp"
         self.output_filename = f"/home/gis/dedicated_disk/geocint/data/out/country_extractions/{country_code}/229_stle/{country_code}_stle_stl_pt_s3_osm_pp_settlements.shp"
 
     def download_and_process_data(self):
