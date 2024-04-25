@@ -4,42 +4,19 @@ import geopandas as gpd
 import pandas as pd
 
 class OSMSettlementsDataDownloader:
-    # Class attribute for the output filename with the specified naming convention
-    #output_filename = "/home/evangelos/data/data_sub19/swe_sub19/ISO_stle_stl_pt_s3_osm_pp_settlements.shp"
+ 
     
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
         self.crs_project = crs_project
         self.crs_global = crs_global
-        self.tags = {'place': ['city', 'borough', 'town', 'village', 'hamlet']}
+        #self.tags = {'place': ['city', 'capital', 'borough', 'town', 'village', 'hamlet']}
+        self.tags = {'place': ['city', 'borough', 'town', 'village', 'hamlet'], 'capital': True}
         self.attributes = ['name', 'name:en', 'name_en']
         ox.settings.log_console = True
         ox.settings.use_cache = True
         self.output_filename = f"/home/evangelos/osm-data/settlements/{country_code}_stle_stl_pt_s3_osm_pp_settlements.shp"
 
-    # def download_and_process_data(self):
-    #     # Load the region of interest geometry
-    #     region_gdf = gpd.read_file(self.geojson_path)
-    #     geometry = region_gdf['geometry'].iloc[0]
-
-    #     # Ensure the geometry is appropriate
-    #     if geometry.geom_type not in ['Polygon', 'MultiPolygon']:
-    #         raise ValueError("Geometry type not supported. Please provide a Polygon or MultiPolygon.")
-
-    #     # Download settlements data
-    #     gdf_settlements = ox.geometries_from_polygon(geometry, tags=self.tags)
-
-    #     # Process geometries to centroid points
-    #     gdf_settlements = self.process_geometries(gdf_settlements)
-
-    #     # Ensure unique column names and presence of required fields
-    #     gdf_settlements = self.add_required_fields(gdf_settlements)
-    #     gdf_settlements = self.ensure_unique_column_names(gdf_settlements)
-    #     #gdf_settlements = self.add_required_fields(gdf_settlements)
-
-    #     # Save the processed data
-    #     self.save_data(gdf_settlements)
-    
     def download_and_process_data(self):
         # Load the region of interest geometry
         region_gdf = gpd.read_file(self.geojson_path)
@@ -97,17 +74,11 @@ class OSMSettlementsDataDownloader:
         gdf.rename(columns=new_columns, inplace=True)
         return gdf
 
-    # def add_required_fields(self, gdf):
-    #     # Add 'fclass', 'name', and 'name:en' columns based on the OSM data
-    #     gdf['fclass'] = gdf['place']
-    #     gdf['name'] = gdf.get('name', pd.NA)
-    #     gdf['name:en'] = gdf.get('name:en', pd.NA)
-
-    #     return gdf
-
     def add_required_fields(self, gdf):
         # Add 'fclass', 'name', and 'name:en' columns based on the OSM data
-        gdf['fclass'] = gdf['place']
+        #gdf['fclass'] = gdf['place']
+        gdf['fclass'] = gdf.apply(lambda row: 'national_capital' if 'capital' in row and row['capital'] == 'yes' else row['place'], axis=1)
+        gdf['name'] = gdf.get('name', pd.NA)
         gdf['name'] = gdf['name'] if 'name' in gdf.columns else pd.NA
         gdf['name:en'] = gdf['name:en'] if 'name:en' in gdf.columns else pd.NA
 
@@ -123,4 +94,3 @@ class OSMSettlementsDataDownloader:
             gdf.to_file(self.output_filename, driver='ESRI Shapefile')
         except Exception as e:
             print(f"An error occurred while saving the GeoDataFrame: {e}")
-

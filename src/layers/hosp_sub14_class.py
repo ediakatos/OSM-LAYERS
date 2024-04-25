@@ -4,9 +4,7 @@ import geopandas as gpd
 import pandas as pd
 
 class OSMHospitalDataDownloader:
-    # Class attribute for the output filename with the specified naming convention
-    #output_filename = "/home/evangelos/data/data_sub14/swe_sub14/ISO_heal_hea_pt_s3_osm_pp_hospital.shp"
-    
+
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
         self.crs_project = crs_project

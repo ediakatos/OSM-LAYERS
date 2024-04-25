@@ -7,7 +7,7 @@ class OSMRailwayStationDataDownloader:
         self.geojson_path = geojson_path
         self.crs_project = crs_project
         self.crs_global = crs_global
-        self.osm_key = 'public_transport'
+        self.osm_key = 'railway'
         self.osm_values = ['station', 'halt']
         self.osm_min_tags = {'passenger': 'yes', 'cargo': 'yes'}
         self.attributes = ['name', 'name:en', 'name_en', 'amenity','passenger', 'cargo']
@@ -44,6 +44,7 @@ class OSMRailwayStationDataDownloader:
                 # Convert lists to strings
                 gdf[col] = gdf[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
         
+        gdf['fclass'] = gdf['railway']
          ##
         actual_tags = gdf.columns.intersection(self.attributes)
         missing_tags = set(self.attributes) - set(actual_tags)
@@ -51,7 +52,7 @@ class OSMRailwayStationDataDownloader:
             print(f"Warning: The following tags are missing from the data and will not be included: {missing_tags}")
 
          # Keep only the geometry, fclass, and the actual present tags
-        columns_to_keep = ['geometry'] + list(actual_tags)   
+        columns_to_keep = ['geometry', 'fclass'] + list(actual_tags)   
         gdf = gdf[columns_to_keep]
         ## 
             

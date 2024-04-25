@@ -95,12 +95,23 @@ def process_geojson_file(geojson_path):
 
     ]
 
-    num_processes = cpu_count() * 3
+    # num_processes = cpu_count() * 3
 
-    with Pool(processes=num_processes) as pool:
-        results = pool.map(process_downloader, downloaders)
-        for result in results:
-            logging.info(result)
+    # with Pool(processes=num_processes) as pool:
+    #     results = pool.map(process_downloader, downloaders)
+    #     for result in results:
+    #         logging.info(result)
+
+    for downloader in downloaders:
+        try:
+            # Attempt to download and process the data using the 'download_and_process_data' method of the downloader instance.
+            downloader.download_and_process_data()
+            # If the download and processing are successful, log a completion message with the class name of the downloader.
+            logging.info(f"Completed: {downloader.__class__.__name__}")
+        except Exception as e:
+            # If an error occurs during the download or processing, log an error message with the class name of the downloader and the error message.
+            logging.error(f"Error in {downloader.__class__.__name__}: {e}")
+
   
 
 # The 'main' function, which serves as the entry point for the script execution.

@@ -39,6 +39,7 @@ class OSMLakeDataDownloader:
             if gdf[col].dtype == object and gdf[col].apply(lambda x: isinstance(x, list)).any():
                 gdf[col] = gdf[col].apply(lambda x: ', '.join(map(str, x)) if isinstance(x, list) else x)
         
+        gdf['fclass'] = gdf['water']
         ##
         actual_tags = gdf.columns.intersection(self.attributes)
         missing_tags = set(self.attributes) - set(actual_tags)
@@ -46,7 +47,7 @@ class OSMLakeDataDownloader:
             print(f"Warning: The following tags are missing from the data and will not be included: {missing_tags}")
 
          # Keep only the geometry, fclass, and the actual present tags
-        columns_to_keep = ['geometry'] + list(actual_tags)   
+        columns_to_keep = ['geometry','fclass'] + list(actual_tags)   
         gdf = gdf[columns_to_keep]
         ## 
 
