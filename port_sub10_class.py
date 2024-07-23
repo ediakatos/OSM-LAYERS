@@ -431,17 +431,17 @@ import pandas as pd
 
 class OSMPortDataDownloader:
     # Class attribute for the output filename
-    output_filename = "/home/evangelos/data/data_sub10/swe_sub10/swe_tran_por_pt_s0_osm_pp_port.shp"
+    
 
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
         self.crs_project = crs_project
         self.crs_global = crs_global
-        self.osm_tags = {'landuse': ['harbour', 'industrial'], 'harbour': 'port'}
+        self.osm_tags = {'landuse': ['harbour', 'industrial'], 'harbour': 'port', 'industrial': 'port'}
         ox.settings.log_console = True
         ox.settings.use_cache = True
         # Class attribute for the output filename
-        self.output_filename = f"/home/evangelos/osm-data/data_sub10/{country_code}_tran_por_pt_s0_osm_pp_port.shp"
+        self.output_filename = f"/home/evangelos/osm-data/{country_code}/ports3/{country_code}_tran_por_pt_s0_osm_pp_port.shp"
 
     def download_and_process_data(self):
         region_gdf = gpd.read_file(self.geojson_path)
@@ -474,12 +474,111 @@ class OSMPortDataDownloader:
             print(f"An error occurred while saving the GeoDataFrame: {e}")
 
     def ensure_unique_column_names(self, gdf):
-        new_columns = {}
+        truncated_columns = {}
+        final_columns = {}
+        unique_suffixes = {}
+
+        # Step 1: Truncate names
         for col in gdf.columns:
-            new_col = col[:10]
-            counter = 1
-            while new_col in new_columns.values():
-                new_col = f"{col[:9]}{counter}"
-                counter += 1
-            new_columns[col] = new_col
-        gdf.rename(columns=new_columns, inplace=True)
+            truncated = col[:10]
+            if truncated not in truncated_columns:
+                truncated_columns[truncated] = 1
+            else:
+                truncated_columns[truncated] += 1
+            final_columns[col] = truncated
+
+        # Step 2: Resolve duplicates by adding a unique suffix
+        for original, truncated in final_columns.items():
+            if truncated_columns[truncated] > 1:
+                if truncated not in unique_suffixes:
+                    unique_suffixes[truncated] = 1
+                else:
+                    unique_suffixes[truncated] += 1
+                suffix = unique_suffixes[truncated]
+                suffix_length = len(str(suffix))
+                truncated_with_suffix = truncated[:10-suffix_length] + str(suffix)
+                final_columns[original] = truncated_with_suffix
+
+        gdf.rename(columns=final_columns, inplace=True)
+        return gdf
+    
+
+    ###
+
+# import os
+# import osmnx as ox
+# import geopandas as gpd
+# import pandas as pd
+
+# class OSMPortDataDownloader:
+#     def __init__(self, geojson_path, crs_project, crs_global, country_code):
+#         self.geojson_path = geojson_path
+#         self.crs_project = crs_project
+#         self.crs_global = crs_global
+#         self.osm_tags = {'landuse': 'harbour', 'harbour': 'port'}
+#         ox.settings.log_console = True
+#         ox.settings.use_cache = True
+#         self.output_filename = f"/home/evangelos/osm-data/data_sub10/{country_code}_tran_por_pt_s0_osm_pp_port.gpkg"
+
+#     def download_and_process_data(self):
+#         # Load the AOI from the GeoJSON file
+#         region_gdf = gpd.read_file(self.geojson_path)
+#         geometry = region_gdf['geometry'].iloc[0]
+
+#         # Check if the geometry is a Polygon or MultiPolygon
+#         if geometry.geom_type not in ['Polygon', 'MultiPolygon']:
+#             raise ValueError("Geometry type not supported. Please provide a Polygon or MultiPolygon.")
+
+#         # Download data from OSM based on the provided tags and the geometry of the AOI
+#         gdf = ox.features_from_polygon(geometry, tags=self.osm_tags)
+
+#         # Filter to ensure landuse is harbour and harbour is port
+#         gdf = gdf[(gdf['landuse'] == 'harbour') & (gdf['harbour'] == 'port')]
+
+#         # Convert to the projected CRS to calculate centroids
+#         gdf = gdf.to_crs(epsg=self.crs_project)
+#         gdf['geometry'] = gdf.geometry.centroid
+
+#         # Convert back to the global CRS
+#         gdf = gdf.to_crs(epsg=self.crs_global)
+
+#         # Ensure unique column names
+#         self.ensure_unique_column_names(gdf)
+
+#         # Make directories if they don't exist
+#         os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)
+
+#         # Save the data to a GeoPackage
+#         try:
+#             gdf.to_file(self.output_filename, driver='GPKG')
+#         except Exception as e:
+#             print(f"An error occurred while saving the GeoDataFrame: {e}")
+
+#     def ensure_unique_column_names(self, gdf):
+#         truncated_columns = {}
+#         final_columns = {}
+#         unique_suffixes = {}
+
+#         # Step 1: Truncate names
+#         for col in gdf.columns:
+#             truncated = col[:10]
+#             if truncated not in truncated_columns:
+#                 truncated_columns[truncated] = 1
+#             else:
+#                 truncated_columns[truncated] += 1
+#             final_columns[col] = truncated
+
+#         # Step 2: Resolve duplicates by adding a unique suffix
+#         for original, truncated in final_columns.items():
+#             if truncated_columns[truncated] > 1:
+#                 if truncated not in unique_suffixes:
+#                     unique_suffixes[truncated] = 1
+#                 else:
+#                     unique_suffixes[truncated] += 1
+#                 suffix = unique_suffixes[truncated]
+#                 suffix_length = len(str(suffix))
+#                 truncated_with_suffix = truncated[:10-suffix_length] + str(suffix)
+#                 final_columns[original] = truncated_with_suffix
+
+#         gdf.rename(columns=final_columns, inplace=True)
+#         return gdf
