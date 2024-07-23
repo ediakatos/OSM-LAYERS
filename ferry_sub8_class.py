@@ -5,7 +5,6 @@ import pandas as pd
 
 class OSMFerryTerminalDataDownloader:
     # Class attribute for the output filename
-    #output_filename = "/home/evangelos/data/data_sub8/swe_sub8/swe_tran_fte_pt_s2_osm_pp_ferryterminal.shp"
 
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
@@ -13,7 +12,7 @@ class OSMFerryTerminalDataDownloader:
         self.crs_global = crs_global
         self.osm_tags = {'amenity': 'ferry_terminal'}
         ox.config(log_console=True, use_cache=True)
-        self.output_filename = f"/home/evangelos/osm-data/data_sub8/{country_code}_tran_fte_pt_s2_osm_pp_ferryterminal.gpkg"
+        self.output_filename = f"/home/evangelos/osm-data/{country_code}/ferry/{country_code}_tran_fte_pt_s2_osm_pp_ferryterminal.shp"
 
     def download_and_process_data(self):
         # Load the AOI from the GeoJSON file
@@ -40,20 +39,39 @@ class OSMFerryTerminalDataDownloader:
         # Make directories if they don't exist
         os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)
 
-        # Truncate column names and ensure uniqueness
-        unique_columns = {}
-        for col in gdf.columns:
-            col_truncated = col[:10]
-            if col_truncated in unique_columns:
-                unique_columns[col_truncated] += 1
-                col_truncated = f"{col_truncated}_{unique_columns[col_truncated]}"
-            else:
-                unique_columns[col_truncated] = 1
-            gdf.rename(columns={col: col_truncated}, inplace=True)
+        gdf = self.ensure_unique_column_names(gdf)
 
         # Save the data to a GeoPackage
         if not gdf.empty:
-            gdf.to_file(self.output_filename, driver='GPKG')
+            gdf.to_file(self.output_filename, driver='ESRI Shapefile')
         else:
             print("No data to save.")
 
+    def ensure_unique_column_names(self, gdf):
+        truncated_columns = {}
+        final_columns = {}
+        unique_suffixes = {}
+
+        # Step 1: Truncate names
+        for col in gdf.columns:
+            truncated = col[:10]
+            if truncated not in truncated_columns:
+                truncated_columns[truncated] = 1
+            else:
+                truncated_columns[truncated] += 1
+            final_columns[col] = truncated
+
+        # Step 2: Resolve duplicates by adding a unique suffix
+        for original, truncated in final_columns.items():
+            if truncated_columns[truncated] > 1:
+                if truncated not in unique_suffixes:
+                    unique_suffixes[truncated] = 1
+                else:
+                    unique_suffixes[truncated] += 1
+                suffix = unique_suffixes[truncated]
+                suffix_length = len(str(suffix))
+                truncated_with_suffix = truncated[:10-suffix_length] + str(suffix)
+                final_columns[original] = truncated_with_suffix
+
+        gdf.rename(columns=final_columns, inplace=True)
+        return gdf

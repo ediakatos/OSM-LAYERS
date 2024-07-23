@@ -60,10 +60,10 @@ def process_geojson_file(geojson_path):
         # OSMMainRoadDataDownloader(geojson_path, country_code), # Uncomment if needed
 #        OSMRailwayDataDownloader(geojson_path, country_code),
         # OSMUrbanRailDataDownloader(geojson_path, country_code), # Uncomment if needed
-        OSMDamDataDownloader(geojson_path, crs_project, crs_global, country_code),
+#        OSMDamDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #       OSMSchoolDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMEducationDataDownloader(geojson_path, crs_project, crs_global, country_code),
-#        OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMFerryRouteDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
