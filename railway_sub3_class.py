@@ -13,7 +13,7 @@ class OSMRailwayDataDownloader:
         self.geojson_path = geojson_path
         ox.settings.log_console = True
         ox.settings.use_cache = True
-        self.output_filename = f"/home/evangelos/osm-data/data_sub3/{country_code}ran_rrd_ln_s2_osm_pp_railways.shp"
+        self.output_filename = f"/home/evangelos/osm-data/data_sub3/{country_code}_ran_rrd_ln_s2_osm_pp_railways.shp"
 
     def download_and_process_data(self):
         region_gdf = gpd.read_file(self.geojson_path)

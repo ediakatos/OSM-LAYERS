@@ -73,11 +73,11 @@ class OSMSettlementsDataDownloader:
 
     def save_data(self, gdf):
         # Make directories if they don't exist
-        os.makedirs(os.path.dirname(OSMSettlementsDataDownloader.output_filename), exist_ok=True)
+        os.makedirs(os.path.dirname(self.output_filename), exist_ok=True)
 
         # Attempt to save the GeoDataFrame
         try:
-            gdf.to_file(OSMSettlementsDataDownloader.output_filename, driver='ESRI Shapefile')
+            gdf.to_file(self.output_filename, driver='ESRI Shapefile')
         except Exception as e:
             print(f"An error occurred while saving the GeoDataFrame: {e}")
 

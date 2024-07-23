@@ -1,0 +1,7 @@
+# venv
+venv/
+
+# cache
+.cache/
+cache/
+__pycache__/

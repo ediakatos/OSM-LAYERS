@@ -13,9 +13,9 @@ class OSMRoadDataDownloader:
         self.country_code = country_code
         ox.settings.log_console = True
         ox.settings.use_cache = True
-        self.output_filename = f"/home/evangelos/osm-data/data_sub1/{country_code}_roads_full.shp"
+        self.output_filename = f"/home/evangelos/osm-data/data_sub1/{country_code}_tran_rds_ln_s0_osm_pp_roads.shp"
 
-    def download_data(self):
+    def download_and_process_data(self):
         gdf = gpd.read_file(self.geojson_path)
         geometry_type = gdf['geometry'].iloc[0].geom_type
         if geometry_type not in ['Polygon', 'MultiPolygon']:
