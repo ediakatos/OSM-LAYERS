@@ -43,13 +43,30 @@ class OSMDamDataDownloader:
             print("No data to save.")
 
     def ensure_unique_column_names(self, gdf):
-        # Ensure that column names are unique after truncation
-        new_columns = {}
+        truncated_columns = {}
+        final_columns = {}
+        unique_suffixes = {}
+
+        # Step 1: Truncate names
         for col in gdf.columns:
-            new_col = col[:10]
-            counter = 1
-            while new_col in new_columns.values():
-                new_col = f"{col[:9]}{counter}"
-                counter += 1
-            new_columns[col] = new_col
-        gdf.rename(columns=new_columns, inplace=True)
+            truncated = col[:10]
+            if truncated not in truncated_columns:
+                truncated_columns[truncated] = 1
+            else:
+                truncated_columns[truncated] += 1
+            final_columns[col] = truncated
+
+        # Step 2: Resolve duplicates by adding a unique suffix
+        for original, truncated in final_columns.items():
+            if truncated_columns[truncated] > 1:
+                if truncated not in unique_suffixes:
+                    unique_suffixes[truncated] = 1
+                else:
+                    unique_suffixes[truncated] += 1
+                suffix = unique_suffixes[truncated]
+                suffix_length = len(str(suffix))
+                truncated_with_suffix = truncated[:10-suffix_length] + str(suffix)
+                final_columns[original] = truncated_with_suffix
+
+        gdf.rename(columns=final_columns, inplace=True)
+        return gdf

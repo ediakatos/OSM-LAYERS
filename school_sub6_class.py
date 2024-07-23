@@ -16,7 +16,7 @@ class OSMSchoolDataDownloader:
         self.crs_project = crs_project
         self.crs_global = crs_global
         ox.config(log_console=True, use_cache=True)
-        self.output_filename = f"/home/evangelos/osm-data/education/{country_code}_educ_edu_pt_s3_osm_pp_schools.shp"
+        self.output_filename = f"/home/evangelos/osm-data/{country_code}/education/{country_code}_educ_edu_pt_s3_osm_pp_schools.shp"
 
 
     def download_and_process_data(self):
