@@ -34,6 +34,10 @@ class OSMHospitalDataDownloader:
         # Ensure required fields and create fclass column
         gdf_hospitals = self.ensure_required_fields(gdf_hospitals)
 
+        # Reorder columns to make fclass the first column
+        columns = ['fclass'] + [col for col in gdf_hospitals.columns if col != 'fclass']
+        gdf_hospitals = gdf_hospitals[columns]
+
         # Save the processed data
         self.save_data(gdf_hospitals)
 
