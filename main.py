@@ -65,11 +65,11 @@ def process_geojson_file(geojson_path):
 #        OSMEducationDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMFerryTerminalDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMFerryRouteDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
+#       OSMPortDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMATMDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMHealthDataDownloader(geojson_path, crs_project, crs_global, country_code),
-#        OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
         # OSMMarketplaceDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
         # OSMPlacesOfWorshipDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
         # OSMRefugeeSitesDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
