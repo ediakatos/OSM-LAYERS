@@ -14,7 +14,7 @@ class OSMHealthDataDownloader:
         }
         ox.settings.log_console = True
         ox.settings.use_cache = True
-        self.output_filename = f"/home/evangelos/osm-data/data_sub13/{country_code}_heal_hea_pt_s3_osm_pp_healthfacilities.shp"
+        self.output_filename = f"/home/evangelos/osm-data/{country_code}/health/{country_code}_heal_hea_pt_s3_osm_pp_healthfacilities.shp"
 
     def download_and_process_data(self):
         # Load the region of interest geometry
