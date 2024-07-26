@@ -215,14 +215,15 @@ import pandas as pd
 
 class OSMCanalDataDownloader:
     # Class attribute for the output filename with the specified naming convention
-    #output_filename = "/home/evangelos/data/data_subXX/swe_subXX/ISO_phys_can_ln_s3_osm_pp_canal.shp"
+    osm_key = "waterway"
+    osm_value = "canal"
     
     def __init__(self, geojson_path, crs_project, crs_global, country_code):
         self.geojson_path = geojson_path
         self.crs_project = crs_project
         self.crs_global = crs_global
         ox.config(log_console=True, use_cache=True)
-        self.output_filename = f"/home/evangelos/osm-data/data_sub30/{country_code}_phys_can_ln_s3_osm_pp_canal.shp"
+        self.output_filename = f"/home/evangelos/osm-data/{country_code}/canal/{country_code}_phys_can_ln_s3_osm_pp_canal.shp"
     
     def download_and_process_data(self):
         # Load the region of interest geometry
@@ -234,7 +235,10 @@ class OSMCanalDataDownloader:
             raise ValueError("Geometry type not supported. Please provide a Polygon or MultiPolygon.")
 
         # Download OSM data
-        gdf = ox.geometries_from_polygon(geometry, tags={"waterway": "canal"})
+        gdf = ox.geometries_from_polygon(geometry, tags={self.osm_key: self.osm_value})
+
+        if 'fclass' not in gdf.columns:
+            gdf['fclass'] = self.osm_value
 
         # Reproject geometries
         gdf_projected = gdf.to_crs(epsg=self.crs_project)

@@ -69,7 +69,7 @@ def process_geojson_file(geojson_path):
 #        OSMBankDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMATMDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMHealthDataDownloader(geojson_path, crs_project, crs_global, country_code),
-        OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+#        OSMHospitalDataDownloader(geojson_path, crs_project, crs_global, country_code),
         # OSMMarketplaceDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
         # OSMPlacesOfWorshipDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
         # OSMRefugeeSitesDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
@@ -85,7 +85,7 @@ def process_geojson_file(geojson_path):
 #        OSMLakeDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMLargeRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMRiverDataDownloader(geojson_path, crs_project, crs_global, country_code),
-#        OSMCanalDataDownloader(geojson_path, crs_project, crs_global, country_code),
+        OSMCanalDataDownloader(geojson_path, crs_project, crs_global, country_code),
 #        OSMRailwayStationDataDownloader(geojson_path, crs_project, crs_global, country_code),
         # OSMEmergencyAssemblyAreasDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
         # OSMWaterSourcesDataDownloader(geojson_path, crs_project, crs_global, country_code), # Uncomment if needed
