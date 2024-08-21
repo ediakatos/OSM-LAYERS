@@ -27,7 +27,7 @@ class OSMSettlementsDataDownloader:
             raise ValueError("Geometry type not supported. Please provide a Polygon or MultiPolygon.")
 
         # Download settlements data
-        gdf_settlements = ox.geometries_from_polygon(geometry, tags=self.tags)
+        gdf_settlements = ox.features_from_polygon(geometry, tags=self.tags)
 
         # Ensure unique column names and presence of required fields
         gdf_settlements = self.add_required_fields(gdf_settlements)
